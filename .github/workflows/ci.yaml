@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Catch up from master
+      - name: Catch up
         if: startsWith(github.ref, env.PERSONAL_BRANCH_PREFIX)
         run: |
           git config --global user.name "Github Actions"
@@ -37,16 +37,19 @@ jobs:
         run: |
           echo "Build the code, run the tests, etc"
 
-      - name: Promote to master
+      - name: Promote
         if: startsWith(github.ref, env.PERSONAL_BRANCH_PREFIX)
         run: |
+          git push
           git checkout master
           git merge ${{ github.ref }}
           git push --set-upstream origin master
 
-      - name: Trigger workflow run on master
+      - name: Trigger build on master
         if: startsWith(github.ref, env.PERSONAL_BRANCH_PREFIX)
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.REPOSITORY_DISPATCH_ACCESS_TOKEN }}
-          event-type: trigger-workflow-ci
+        run: |
+          curl -H "Accept: application/vnd.github.everest-preview+json" \
+            -H "Authorization: token ${{ secrets.REPOSITORY_DISPATCH_ACCESS_TOKEN }}" \
+            --request POST \
+            --data '{"event_type": "trigger-workflow-ci"}' \
+            https://api.github.com/repos/${{ github.repository }}/dispatches
