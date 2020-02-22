@@ -9,11 +9,6 @@ jobs:
     name: Gated Build
     runs-on: ubuntu-18.04
     steps:
-      - name: Dump variables
-        run: |
-          echo "github.ref = ${{ github.ref }}"
-          echo "env.PERSONAL_BRANCH_PREFIX = ${{ env.PERSONAL_BRANCH_PREFIX }}"
-
       - name: Check out the repository
         uses: actions/checkout@v2
         with:
