@@ -47,7 +47,9 @@ jobs:
 
       - name: Trigger build on master
         if: startsWith(github.ref, env.PERSONAL_BRANCH_PREFIX)
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.REPOSITORY_DISPATCH_ACCESS_TOKEN }}
-          event-type: blah
+        run: |
+          curl -H "Accept: application/vnd.github.everest-preview+json" \
+            -H "Authorization: token ${{ secrets.REPOSITORY_DISPATCH_ACCESS_TOKEN }}" \
+            --request POST \
+            --data '{"event_type": "trigger-workflow-ci"}' \
+            https://api.github.com/repos/${{ github.repository }}/dispatches
