@@ -1,5 +1,8 @@
 name: Continuous Integration
-on: [push]
+on:
+  push:
+  repository_dispatch:
+    types: [trigger-workflow-ci]
 
 env:
   PERSONAL_BRANCH_PREFIX: refs/heads/personal/
@@ -9,7 +12,14 @@ jobs:
     name: Gated Build
     runs-on: ubuntu-18.04
     steps:
-      - name: Check out the repository
+      - name: Check out (triggered workflow)
+        if: github.event_name == 'repository_dispatch'
+        uses: actions/checkout@v2
+        with:
+          ref: refs/heads/master
+
+      - name: Check out (normal workflow)
+        if: github.event_name != 'repository_dispatch'
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -27,9 +37,16 @@ jobs:
         run: |
           echo "Build the code, run the tests, etc"
 
-      - name: Promote changes to master
+      - name: Promote to master
         if: startsWith(github.ref, env.PERSONAL_BRANCH_PREFIX)
         run: |
           git checkout master
           git merge ${{ github.ref }}
           git push --set-upstream origin master
+
+      - name: Trigger workflow run on master
+        if: startsWith(github.ref, env.PERSONAL_BRANCH_PREFIX)
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.REPOSITORY_DISPATCH_ACCESS_TOKEN }}
+          event-type: trigger-workflow-ci
