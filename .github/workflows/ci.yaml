@@ -1,6 +1,9 @@
 name: Continuous Integration
 on: [push]
 
+env:
+  PERSONAL_BRANCH_PREFIX: refs/heads/personal/
+
 jobs:
   build:
     name: Gated Build
@@ -9,12 +12,13 @@ jobs:
       - name: Dump variables
         run: |
           echo "github.ref = ${{ github.ref }}"
+          echo "env.PERSONAL_BRANCH_PREFIX = ${{ env.PERSONAL_BRANCH_PREFIX }}"
 
       - name: Check out the repository
         uses: actions/checkout@v2
 
       - name: Catch up from master
-        if: startsWith(github.ref, 'personal/')
+        if: startsWith(github.ref, env.PERSONAL_BRANCH_PREFIX)
         run: |
           git fetch --prune --depth=1 origin master
           git merge origin/master
@@ -24,6 +28,7 @@ jobs:
           echo "Build the code, run the tests, etc"
 
       - name: Promote changes to master
+        if: startsWith(github.ref, env.PERSONAL_BRANCH_PREFIX)
         run: |
           git checkout master
           git merge ${{ github.ref }}
