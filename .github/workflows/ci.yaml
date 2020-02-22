@@ -8,7 +8,7 @@ jobs:
     steps:
       - name: Dump variables
         run: |
-          echo "github.ref = ${{ <github.ref> }}"
+          echo "github.ref = ${{ github.ref }}"
 
       - name: Check out the repository
         uses: actions/checkout@v2
@@ -26,5 +26,5 @@ jobs:
       - name: Promote changes to master
         run: |
           git checkout master
-          git merge ${{ <github.ref> }}
+          git merge ${{ github.ref }}
           git push --set-upstream origin master
