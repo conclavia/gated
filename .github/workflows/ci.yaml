@@ -16,11 +16,13 @@ jobs:
 
       - name: Check out the repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Catch up from master
         if: startsWith(github.ref, env.PERSONAL_BRANCH_PREFIX)
         run: |
-          git fetch --prune --depth=1 origin master
+          git fetch --prune origin master
           git merge origin/master
 
       - name: Run normal CI steps
