@@ -1,0 +1,30 @@
+name: Continuous Integration
+on: [push]
+
+jobs:
+  build:
+    name: Gated Build
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Dump variables
+        run: |
+          echo "github.ref = ${{ <github.ref> }}"
+
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Catch up from master
+        if: startsWith(github.ref, 'personal/')
+        run: |
+          git fetch --prune --depth=1 origin master
+          git merge origin/master
+
+      - name: Run normal CI steps
+        run: |
+          echo "Build the code, run the tests, etc"
+
+      - name: Promote changes to master
+        run: |
+          git checkout master
+          git merge ${{ <github.ref> }}
+          git push --set-upstream origin master
