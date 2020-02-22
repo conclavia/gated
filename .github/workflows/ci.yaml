@@ -50,4 +50,4 @@ jobs:
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.REPOSITORY_DISPATCH_ACCESS_TOKEN }}
-          event-type: trigger-workflow-ci
+          event-type: blah
