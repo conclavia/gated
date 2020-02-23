@@ -31,7 +31,6 @@ jobs:
       - name: Promote
         if: startsWith(github.ref, env.PERSONAL_BRANCH_PREFIX)
         run: |
-          git push
           git checkout master
           git merge ${{ github.ref }}
           git push --set-upstream origin master
