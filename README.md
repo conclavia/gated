@@ -1,6 +1,1 @@
-Hello world
-This is an awesome readme file
-It is great
-Add more content
-And yet more!
-Conflicts cause many issues
+# Simple workflow to demonstrate a gated build setup using GitHub Actions
