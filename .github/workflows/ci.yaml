@@ -34,4 +34,4 @@ jobs:
           git push
           git checkout master
           git merge ${{ github.ref }}
-          git push HEAD:master
+          git push --set-upstream origin master
