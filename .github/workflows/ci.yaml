@@ -42,6 +42,7 @@ jobs:
       - name: Promote
         if: startsWith(github.ref, env.PERSONAL_BRANCH_PREFIX)
         run: |
+          git fetch --prune origin master
           git checkout master
           git merge --no-ff ${{ github.sha }}
           git push --set-upstream origin master
