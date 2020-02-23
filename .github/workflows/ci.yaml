@@ -1,8 +1,5 @@
 name: Continuous Integration
-on:
-  push:
-  repository_dispatch:
-    types: [trigger-workflow-ci]
+on: [push]
 
 env:
   PERSONAL_BRANCH_PREFIX: refs/heads/personal/
@@ -12,14 +9,7 @@ jobs:
     name: Gated Build
     runs-on: ubuntu-18.04
     steps:
-      - name: Check out (triggered workflow)
-        if: github.event_name == 'repository_dispatch'
-        uses: actions/checkout@v2
-        with:
-          ref: refs/heads/master
-
-      - name: Check out (normal workflow)
-        if: github.event_name != 'repository_dispatch'
+      - name: Check out
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -43,13 +33,6 @@ jobs:
           git push
           git checkout master
           git merge ${{ github.ref }}
-          git push --set-upstream origin master
 
-      - name: Trigger build on master
-        if: startsWith(github.ref, env.PERSONAL_BRANCH_PREFIX)
-        run: |
-          curl -H "Accept: application/vnd.github.everest-preview+json" \
-            -H "Authorization: token ${{ secrets.REPOSITORY_DISPATCH_ACCESS_TOKEN }}" \
-            --request POST \
-            --data '{"event_type": "trigger-workflow-ci"}' \
-            https://api.github.com/repos/${{ github.repository }}/dispatches
+          url="https://${{ github.actor }}:${{ secrets.GITHUB_ACTIONS_TOKEN  }}@github.com/${{ github.repository }}.git"
+          git push "${url}" HEAD:master
